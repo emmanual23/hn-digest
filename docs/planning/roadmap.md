@@ -14,41 +14,37 @@
 ### Tasks
 
 #### Project Setup
-| Task | Type | Complexity | Dependencies |
-|------|------|------------|--------------|
-| Initialize Next.js 14 project with TypeScript, Tailwind, shadcn/ui | Setup | Low | None |
-| Configure Supabase project and environment variables | Setup | Low | None |
-| Create database schema (digests, stories, summaries tables) | Data | Low | Supabase config |
-| Set up Supabase client utilities (server + browser) | Backend | Low | Supabase config |
-| Define TypeScript types for Digest, Story, Summary, HN API | Types | Low | None |
+| # | Task | Type | Complexity | Dependencies |
+|---|------|------|------------|--------------|
+| #1 | Initialize Next.js 14 project with TypeScript, Tailwind, shadcn/ui | Setup | Low | None |
+| #2 | Configure Supabase project and environment variables | Setup | Low | None |
+| #3 | Create database schema (digests, stories, summaries tables) | Data | Low | #2 |
+| #4 | Set up Supabase client utilities (server + browser) | Backend | Low | #2 |
+| #5 | Define TypeScript types for Digest, Story, Summary, HN API | Types | Low | None |
 
 #### F1: Story Fetching
-| Task | Type | Complexity | Dependencies |
-|------|------|------------|--------------|
-| Build HN API client (fetchTopStories, fetchItem, fetchComments) | Backend | Medium | Types |
-| Build cron route shell (POST /api/cron/generate with auth) | Backend | Low | Supabase client |
-| Implement fetch pipeline: create digest → fetch top 30 stories → fetch top 50 comments per story → insert rows | Backend | High | HN client, cron route, schema |
-| Add status state machine to digest (pending → fetching → synthesizing → complete/failed) | Backend | Low | Schema |
+| # | Task | Type | Complexity | Dependencies |
+|---|------|------|------------|--------------|
+| #6 | Build HN API client (fetchTopStories, fetchItem, fetchComments) | Backend | Medium | #5 |
+| #7 | Build cron route shell (POST /api/cron/generate with auth) | Backend | Low | #4 |
+| #8 | Implement fetch pipeline (stories + comments → database) | Backend | High | #6, #7, #3 |
+| #9 | Add status state machine to digest lifecycle | Backend | Low | #3 |
 
 #### F2: Discussion Synthesis
-| Task | Type | Complexity | Dependencies |
-|------|------|------------|--------------|
-| Build LLM client abstraction (src/lib/llm.ts) | Backend | Low | None |
-| Write synthesis prompt template (src/lib/prompts.ts) | Backend | Medium | None |
-| Implement synthesis step in cron pipeline: send comments → parse takeaways → store summaries | Backend | High | LLM client, prompts, fetch pipeline |
-| Add error handling: mark digest failed on LLM error, allow partial success | Backend | Medium | Cron pipeline |
+| # | Task | Type | Complexity | Dependencies |
+|---|------|------|------------|--------------|
+| #10 | Build LLM client abstraction (src/lib/llm.ts) | Backend | Low | None |
+| #11 | Write synthesis prompt template (src/lib/prompts.ts) | Backend | Medium | None |
+| #12 | Implement synthesis step in cron pipeline | Backend | High | #10, #11, #8 |
+| #13 | Add error handling — partial success and failure recovery | Backend | Medium | #12 |
 
 #### F3: Daily Digest Page
-| Task | Type | Complexity | Dependencies |
-|------|------|------------|--------------|
-| Build root layout with Header and Footer components | Frontend | Low | Project setup |
-| Build DigestHeader component (date, story count) | Frontend | Low | Types |
-| Build StoryCard component (title, metadata, takeaways) | Frontend | Medium | Types |
-| Build TakeawayList component (renders takeaways with type badges) | Frontend | Low | Types |
-| Build StoryMeta component (score, comments, author, HN link) | Frontend | Low | Types |
-| Build EmptyState component (no digest available) | Frontend | Low | None |
-| Build homepage (src/app/page.tsx) — fetch today's digest, render story cards | Frontend | Medium | All components, schema |
-| Build GET /api/digests/today route | Backend | Low | Supabase client, schema |
+| # | Task | Type | Complexity | Dependencies |
+|---|------|------|------------|--------------|
+| #14 | Build root layout with Header and Footer components | Frontend | Low | #1 |
+| #15 | Build StoryCard, TakeawayList, and StoryMeta components | Frontend | Medium | #5 |
+| #16 | Build homepage — today's digest page with EmptyState | Frontend | Medium | #14, #15, #3, #4 |
+| #17 | Build GET /api/digests/today route | Backend | Low | #4, #3 |
 
 #### F5: Story Metadata
 | Task | Type | Complexity | Dependencies |
