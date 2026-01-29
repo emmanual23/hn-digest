@@ -57,7 +57,9 @@ export async function GET() {
       comment_count: story.comment_count,
       posted_at: story.posted_at,
       rank: story.rank,
-      summary: story.summaries?.[0] ?? null,
+      summary: Array.isArray(story.summaries)
+        ? story.summaries[0] ?? null
+        : story.summaries ?? null,
     }))
     .sort((a, b) => a.rank - b.rank);
 

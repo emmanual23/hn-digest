@@ -58,7 +58,9 @@ export default async function Home() {
   const stories: StoryWithSummary[] = (digest.stories as any[])
     .map((s) => ({
       ...s,
-      summary: s.summaries?.[0] ?? null,
+      summary: Array.isArray(s.summaries)
+        ? s.summaries[0] ?? null
+        : s.summaries ?? null,
     }))
     .sort((a, b) => a.rank - b.rank);
 

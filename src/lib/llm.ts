@@ -10,24 +10,25 @@ interface SynthesisResult {
 export async function synthesizeComments(
   storyTitle: string,
   comments: string[],
-  model = "gpt-4o-mini"
+  model = "claude-3-5-haiku-20241022"
 ): Promise<SynthesisResult & { model_used: string; token_count: number | null }> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
 
   const prompt = buildSynthesisPrompt(storyTitle, comments);
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
       model,
+      max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
-      response_format: { type: "json_object" },
     }),
   });
 
@@ -37,11 +38,16 @@ export async function synthesizeComments(
   }
 
   const data = await res.json();
-  const content = data.choices[0]?.message?.content;
+  const content = data.content?.[0]?.text;
   if (!content) throw new Error("Empty LLM response");
 
-  const parsed: SynthesisResult = JSON.parse(content);
-  const tokenCount = data.usage?.total_tokens ?? null;
+  // Extract JSON from response (handle markdown code blocks)
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error("No JSON found in LLM response");
+
+  const parsed: SynthesisResult = JSON.parse(jsonMatch[0]);
+  const tokenCount =
+    (data.usage?.input_tokens ?? 0) + (data.usage?.output_tokens ?? 0) || null;
 
   return {
     takeaways: parsed.takeaways,
