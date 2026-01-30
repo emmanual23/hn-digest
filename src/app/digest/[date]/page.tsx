@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DigestHeader } from "@/components/DigestHeader";
 import { DigestNav } from "@/components/DigestNav";
-import { StoryCard } from "@/components/StoryCard";
+import { TopicFilteredStoryList } from "@/components/TopicFilteredStoryList";
 import { StoryWithSummary } from "@/types/digest";
 import type { Metadata } from "next";
 
@@ -54,6 +54,8 @@ export default async function DigestPage({ params }: DigestPageProps) {
           takeaways,
           sentiment,
           key_debates,
+          quotes,
+          topics,
           model_used,
           token_count,
           generated_at
@@ -110,11 +112,7 @@ export default async function DigestPage({ params }: DigestPageProps) {
           />
           <DigestHeader date={digest.date} storyCount={digest.story_count} />
         </div>
-        <div className="space-y-4">
-          {stories.map((story) => (
-            <StoryCard key={story.id} story={story} />
-          ))}
-        </div>
+        <TopicFilteredStoryList stories={stories} />
       </div>
     </div>
   );
