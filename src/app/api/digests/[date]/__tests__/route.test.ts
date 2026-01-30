@@ -60,7 +60,9 @@ describe("GET /api/digests/[date]", () => {
             id: "sum1",
             takeaways: [{ point: "Key insight", type: "consensus" }],
             sentiment: "positive",
-            key_debates: [],
+            key_debates: [{ topic: "Debate", for: "Pro argument", against: "Con argument" }],
+            quotes: [{ text: "Notable quote", author: "commenter1" }],
+            topics: ["ai", "startups"],
             model_used: "claude-3-5-haiku",
             token_count: 300,
             generated_at: "2026-01-29T12:00:00Z",
@@ -108,6 +110,9 @@ describe("GET /api/digests/[date]", () => {
     // Summary reshaped from object to .summary
     expect(body.digest.stories[1].summary.sentiment).toBe("positive");
     expect(body.digest.stories[1].summary.takeaways).toHaveLength(1);
+    expect(body.digest.stories[1].summary.quotes).toEqual([{ text: "Notable quote", author: "commenter1" }]);
+    expect(body.digest.stories[1].summary.topics).toEqual(["ai", "startups"]);
+    expect(body.digest.stories[1].summary.key_debates[0].topic).toBe("Debate");
 
     // Null summary handled
     expect(body.digest.stories[0].summary).toBeNull();

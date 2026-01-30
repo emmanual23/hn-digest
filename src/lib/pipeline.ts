@@ -113,6 +113,8 @@ export async function runPipeline(): Promise<{ digestId: string; storyCount: num
             takeaways: result.takeaways,
             sentiment: result.sentiment,
             key_debates: result.key_debates,
+            quotes: result.quotes,
+            topics: result.topics,
             model_used: result.model_used,
             token_count: result.token_count,
           },

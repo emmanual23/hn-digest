@@ -22,6 +22,20 @@ describe("TakeawayList", () => {
     expect(screen.getByText("Insight")).toBeInTheDocument();
   });
 
+  it("renders question and recommendation type badges", () => {
+    const takeaways: Takeaway[] = [
+      { point: "What about scaling?", type: "question" },
+      { point: "Try using Redis", type: "recommendation" },
+    ];
+
+    render(<TakeawayList takeaways={takeaways} />);
+
+    expect(screen.getByText("What about scaling?")).toBeInTheDocument();
+    expect(screen.getByText("Try using Redis")).toBeInTheDocument();
+    expect(screen.getByText("Question")).toBeInTheDocument();
+    expect(screen.getByText("Recommendation")).toBeInTheDocument();
+  });
+
   it("renders nothing when takeaways are empty", () => {
     const { container } = render(<TakeawayList takeaways={[]} />);
     expect(container.innerHTML).toBe("");

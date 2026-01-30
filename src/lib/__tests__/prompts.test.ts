@@ -13,11 +13,22 @@ describe("buildSynthesisPrompt", () => {
     expect(prompt).toContain("[Comment 3]: third");
   });
 
-  it("requests JSON output with takeaways structure", () => {
+  it("requests JSON output with all expected fields", () => {
     const prompt = buildSynthesisPrompt("Title", ["comment"]);
     expect(prompt).toContain("takeaways");
     expect(prompt).toContain("sentiment");
     expect(prompt).toContain("key_debates");
+    expect(prompt).toContain("quotes");
+    expect(prompt).toContain("topics");
     expect(prompt).toContain("JSON");
+  });
+
+  it("describes all five takeaway types", () => {
+    const prompt = buildSynthesisPrompt("Title", ["comment"]);
+    expect(prompt).toContain("consensus");
+    expect(prompt).toContain("counterpoint");
+    expect(prompt).toContain("insight");
+    expect(prompt).toContain("question");
+    expect(prompt).toContain("recommendation");
   });
 });

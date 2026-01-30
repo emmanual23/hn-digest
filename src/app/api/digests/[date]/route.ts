@@ -37,6 +37,8 @@ export async function GET(
           takeaways,
           sentiment,
           key_debates,
+          quotes,
+          topics,
           model_used,
           token_count,
           generated_at

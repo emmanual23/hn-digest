@@ -20,7 +20,9 @@ describe("synthesizeComments", () => {
         { point: "Some disagree about Y", type: "counterpoint" },
       ],
       sentiment: "divided",
-      key_debates: ["X vs Y"],
+      key_debates: [{ topic: "X vs Y", for: "X is better", against: "Y is better" }],
+      quotes: [{ text: "This is notable", author: "testuser" }],
+      topics: ["ai", "security"],
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -36,9 +38,32 @@ describe("synthesizeComments", () => {
     expect(result.takeaways).toHaveLength(2);
     expect(result.takeaways[0].type).toBe("consensus");
     expect(result.sentiment).toBe("divided");
-    expect(result.key_debates).toEqual(["X vs Y"]);
+    expect(result.key_debates).toEqual([{ topic: "X vs Y", for: "X is better", against: "Y is better" }]);
+    expect(result.quotes).toEqual([{ text: "This is notable", author: "testuser" }]);
+    expect(result.topics).toEqual(["ai", "security"]);
     expect(result.model_used).toBe("claude-3-5-haiku-20241022");
     expect(result.token_count).toBe(500);
+  });
+
+  it("defaults quotes and topics to empty arrays when missing", async () => {
+    const llmResponse = {
+      takeaways: [{ point: "Key point", type: "insight" }],
+      sentiment: "neutral",
+      key_debates: [],
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          content: [{ type: "text", text: JSON.stringify(llmResponse) }],
+          usage: { input_tokens: 100, output_tokens: 50 },
+        }),
+    });
+
+    const result = await synthesizeComments("Title", ["comment"]);
+    expect(result.quotes).toEqual([]);
+    expect(result.topics).toEqual([]);
   });
 
   it("throws when ANTHROPIC_API_KEY is missing", async () => {
@@ -79,6 +104,8 @@ describe("synthesizeComments", () => {
       takeaways: [{ point: "Key point", type: "insight" }],
       sentiment: "neutral",
       key_debates: [],
+      quotes: [],
+      topics: [],
     };
 
     mockFetch.mockResolvedValueOnce({

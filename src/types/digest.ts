@@ -1,6 +1,17 @@
 export interface Takeaway {
   point: string;
-  type: "consensus" | "counterpoint" | "insight";
+  type: "consensus" | "counterpoint" | "insight" | "question" | "recommendation";
+}
+
+export interface Quote {
+  text: string;
+  author: string;
+}
+
+export interface StructuredDebate {
+  topic: string;
+  for: string;
+  against: string;
 }
 
 export interface Digest {
@@ -29,7 +40,9 @@ export interface Summary {
   story_id: string;
   takeaways: Takeaway[];
   sentiment: string | null;
-  key_debates: string[] | null;
+  key_debates: StructuredDebate[] | null;
+  quotes: Quote[];
+  topics: string[];
   model_used: string;
   token_count: number | null;
   generated_at: string;

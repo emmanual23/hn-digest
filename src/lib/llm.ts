@@ -1,10 +1,12 @@
-import { Takeaway } from "@/types/digest";
+import { Takeaway, Quote, StructuredDebate } from "@/types/digest";
 import { buildSynthesisPrompt } from "./prompts";
 
 interface SynthesisResult {
   takeaways: Takeaway[];
   sentiment: string | null;
-  key_debates: string[] | null;
+  key_debates: StructuredDebate[] | null;
+  quotes: Quote[];
+  topics: string[];
 }
 
 export async function synthesizeComments(
@@ -26,7 +28,7 @@ export async function synthesizeComments(
     },
     body: JSON.stringify({
       model,
-      max_tokens: 1024,
+      max_tokens: 1536,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
     }),
@@ -53,6 +55,8 @@ export async function synthesizeComments(
     takeaways: parsed.takeaways,
     sentiment: parsed.sentiment ?? null,
     key_debates: parsed.key_debates ?? null,
+    quotes: parsed.quotes ?? [],
+    topics: parsed.topics ?? [],
     model_used: model,
     token_count: tokenCount,
   };

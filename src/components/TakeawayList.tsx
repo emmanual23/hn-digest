@@ -4,12 +4,16 @@ const TYPE_STYLES: Record<Takeaway["type"], string> = {
   consensus: "bg-emerald-50 text-emerald-700",
   counterpoint: "bg-amber-50 text-amber-700",
   insight: "bg-slate-100 text-slate-700",
+  question: "bg-blue-50 text-blue-700",
+  recommendation: "bg-purple-50 text-purple-700",
 };
 
 const TYPE_LABELS: Record<Takeaway["type"], string> = {
   consensus: "Consensus",
   counterpoint: "Counterpoint",
   insight: "Insight",
+  question: "Question",
+  recommendation: "Recommendation",
 };
 
 interface TakeawayListProps {
