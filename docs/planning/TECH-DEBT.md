@@ -13,7 +13,7 @@ Track known shortcuts, workarounds, and areas needing improvement.
 | Critical | 0 | - |
 | High | 1 | ~1 hour |
 | Medium | 1 | ~30 min |
-| Low | 1 | ~30 min |
+| Low | 2 | ~45 min |
 
 ---
 
@@ -42,7 +42,14 @@ Track known shortcuts, workarounds, and areas needing improvement.
 
 ### Low (Fix when convenient)
 
-**TD-003: Sequential story fetching in pipeline**
+**TD-003: Duplicate digest query reshaping logic**
+- **Location:** `src/app/page.tsx`, `src/app/digest/[date]/page.tsx`, `src/app/api/digests/today/route.ts`
+- **Problem:** The `Array.isArray(s.summaries) ? ...` pattern for reshaping Supabase 1:1 joins is repeated in 3 places
+- **Impact:** Low — simple pattern, but changes to the shape require updating 3 files
+- **Fix:** Extract into a shared `reshapeStories()` utility in `src/lib/utils.ts`
+- **Added:** 2026-01-29
+
+**TD-004: Sequential story fetching in pipeline**
 - **Location:** `src/lib/pipeline.ts:47-52`
 - **Problem:** Stories are fetched one-by-one in a `for` loop instead of parallel batches
 - **Impact:** Pipeline runs slower than necessary (~30 sequential API calls). Acceptable since it runs once daily via cron

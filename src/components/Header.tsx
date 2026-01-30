@@ -14,6 +14,12 @@ export function Header() {
           >
             Today
           </Link>
+          <Link
+            href="/archive"
+            className="text-sm font-medium text-slate-500 hover:text-slate-700"
+          >
+            Archive
+          </Link>
         </nav>
       </div>
     </header>

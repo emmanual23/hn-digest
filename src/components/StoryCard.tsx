@@ -1,6 +1,7 @@
 import { StoryWithSummary } from "@/types/digest";
 import { StoryMeta } from "./StoryMeta";
 import { TakeawayList } from "./TakeawayList";
+import { SentimentBadge } from "./SentimentBadge";
 
 interface StoryCardProps {
   story: StoryWithSummary;
@@ -35,7 +36,10 @@ export function StoryCard({ story }: StoryCardProps) {
         </div>
 
         {story.summary && (
-          <div className="border-t border-slate-100 pt-4">
+          <div className="border-t border-slate-100 pt-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <SentimentBadge sentiment={story.summary.sentiment} />
+            </div>
             <TakeawayList takeaways={story.summary.takeaways} />
           </div>
         )}

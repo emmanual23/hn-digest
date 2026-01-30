@@ -1,15 +1,33 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DigestHeader } from "@/components/DigestHeader";
 import { DigestNav } from "@/components/DigestNav";
 import { StoryCard } from "@/components/StoryCard";
-import { EmptyState } from "@/components/EmptyState";
 import { StoryWithSummary } from "@/types/digest";
+import type { Metadata } from "next";
 
-export const revalidate = 300; // revalidate every 5 minutes
+interface DigestPageProps {
+  params: Promise<{ date: string }>;
+}
 
-export default async function Home() {
+export async function generateMetadata({ params }: DigestPageProps): Promise<Metadata> {
+  const { date } = await params;
+  return {
+    title: `${date} — HN Digest`,
+    description: `Hacker News discussion digest for ${date}`,
+  };
+}
+
+export const revalidate = 3600;
+
+export default async function DigestPage({ params }: DigestPageProps) {
+  const { date } = await params;
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    notFound();
+  }
+
   const supabase = await createClient();
-  const today = new Date().toISOString().split("T")[0];
 
   const { data: digest } = await supabase
     .from("digests")
@@ -43,17 +61,33 @@ export default async function Home() {
       )
     `
     )
-    .eq("date", today)
+    .eq("date", date)
     .eq("status", "complete")
     .single();
 
   if (!digest) {
-    return (
-      <div className="mx-auto max-w-3xl px-6 py-8">
-        <EmptyState />
-      </div>
-    );
+    notFound();
   }
+
+  // Get adjacent digest dates for navigation
+  const [{ data: prevData }, { data: nextData }] = await Promise.all([
+    supabase
+      .from("digests")
+      .select("date")
+      .eq("status", "complete")
+      .lt("date", date)
+      .order("date", { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from("digests")
+      .select("date")
+      .eq("status", "complete")
+      .gt("date", date)
+      .order("date", { ascending: true })
+      .limit(1)
+      .single(),
+  ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const stories: StoryWithSummary[] = (digest.stories as any[])
@@ -65,16 +99,6 @@ export default async function Home() {
     }))
     .sort((a, b) => a.rank - b.rank);
 
-  // Get previous digest for nav
-  const { data: prevData } = await supabase
-    .from("digests")
-    .select("date")
-    .eq("status", "complete")
-    .lt("date", digest.date)
-    .order("date", { ascending: false })
-    .limit(1)
-    .single();
-
   return (
     <div className="mx-auto max-w-3xl px-6 py-8">
       <div className="space-y-8">
@@ -82,7 +106,7 @@ export default async function Home() {
           <DigestNav
             currentDate={digest.date}
             previousDate={prevData?.date ?? null}
-            nextDate={null}
+            nextDate={nextData?.date ?? null}
           />
           <DigestHeader date={digest.date} storyCount={digest.story_count} />
         </div>

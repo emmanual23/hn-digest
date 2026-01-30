@@ -10,8 +10,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HN Digest",
+  title: {
+    default: "HN Digest",
+    template: "%s — HN Digest",
+  },
   description: "Daily digestible summaries of top Hacker News discussions",
+  openGraph: {
+    title: "HN Digest",
+    description: "Daily digestible summaries of top Hacker News discussions",
+    type: "website",
+    locale: "en_US",
+  },
 };
 
 export default function RootLayout({
